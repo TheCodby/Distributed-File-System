@@ -1,0 +1,17 @@
+[package]
+name = "chunk_server"
+version = "0.1.0"
+edition = "2021"
+
+
+[dependencies]
+libs = { path = "../../libs" }
+tonic = { version = "0.10", features = ["tls"] }
+tokio = { version = "1.0", features = ["full"] }
+tokio-stream = "0.1.14"
+futures = "0.3.29"
+dotenv = "0.15.0"
+async-lock = "3.1.0"
+serde = "1.0.192"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

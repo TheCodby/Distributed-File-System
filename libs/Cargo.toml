@@ -1,0 +1,18 @@
+[package]
+name = "libs"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+tonic = { version = "0.10", features = ["tls"] }
+prost = "0.12"
+dotenv = "0.15.0"
+serde = "1.0.192"
+
+[dependencies.mongodb]
+version = "2.7.1"
+
+[build-dependencies]
+tonic-build = "0.10"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

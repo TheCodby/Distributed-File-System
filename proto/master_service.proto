@@ -1,0 +1,32 @@
+syntax = "proto3";
+
+package masterservice;
+
+service MasterService {
+    rpc connectToMaster (ConnectRequest) returns (ConnectResponse);
+    rpc uploadFile (stream UploadFileToMasterRequest) returns (UploadFileToMasterResponse);
+    rpc readFile (ReadFileRequest) returns (stream ReadFileResponse);
+}
+message ConnectRequest {
+    string ip = 1;
+    int32 port = 2;
+}
+message ConnectResponse {
+    bool success = 1;
+}
+message ReadFileRequest{
+    string fileId = 1;
+}
+message ReadFileResponse{
+    bytes binary = 1;
+    string fileName = 2;
+    string fileFormat = 3;
+}
+message UploadFileToMasterRequest {
+    bytes binary = 1;
+    string fileFormat = 2;
+}
+
+message UploadFileToMasterResponse {
+    string url = 1;
+}

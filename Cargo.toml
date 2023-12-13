@@ -1,0 +1,11 @@
+
+[workspace]
+resolver = '2'
+members = [
+	'apps/master_server',
+	'apps/chunk_server',
+	'./libs',
+]
+
+[profile.release]
+lto = true

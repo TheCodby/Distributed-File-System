@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package slaveservice;
+
+service SlaveService {
+    rpc uploadFile (stream UploadFileToSlaveRequest) returns (UploadFileToSlaveResponse);
+    rpc getChunk (ReadChunkRequest) returns (stream ReadChunkResponse);
+}
+
+message UploadFileToSlaveRequest {
+    bytes binary = 1;
+}
+
+message UploadFileToSlaveResponse {
+    string filePath = 1;
+}
+message ReadChunkRequest{
+    string filePath = 1;
+}
+message ReadChunkResponse{
+    bytes binary = 1;
+}

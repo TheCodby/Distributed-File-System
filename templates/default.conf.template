@@ -1,0 +1,13 @@
+upstream grpc_servers {
+    server master:50051;
+    server master2:50051;
+}
+
+server {
+    listen ${NGINX_PORT} http2;
+
+    location / {
+        grpc_pass grpc_servers;
+    }
+}
+

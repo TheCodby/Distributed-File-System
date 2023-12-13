@@ -1,0 +1,124 @@
+version: '3'
+
+services:
+  mongodb:
+    image: mongo
+    ports:
+      - '27017:27017'
+    volumes:
+      - ./data:/data/db
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=a123123
+      - MONGO_INITDB_DATABASE=dfs
+    networks:
+      - myapp-network
+    logging:
+      driver: none
+  mongo-express:
+    image: mongo-express
+    ports:
+      - 8081:8081
+    environment:
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=a123123
+      - ME_CONFIG_MONGODB_SERVER=mongodb
+      - ME_CONFIG_MONGODB_PORT=27017
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+    depends_on:
+      - mongodb
+    networks:
+      - myapp-network
+    logging:
+      driver: none
+  master:
+    build:
+      context: .
+      dockerfile: ./apps/master_server/Dockerfile
+    ports:
+      - '50051:50051'
+    networks:
+      - myapp-network
+    depends_on:
+      - mongodb
+    environment:
+      - DATABASE_URL=mongodb://root:a123123@mongodb:27017/
+      - RUST_BACKTRACE=1
+  master2:
+    build:
+      context: .
+      dockerfile: ./apps/master_server/Dockerfile
+    ports:
+      - '50050:50051'
+    networks:
+      - myapp-network
+    depends_on:
+      - mongodb
+    environment:
+      - DATABASE_URL=mongodb://root:a123123@mongodb:27017/
+      - RUST_BACKTRACE=1
+
+  slave1:
+    build:
+      context: .
+      dockerfile: ./apps/chunk_server/Dockerfile
+    depends_on:
+      - mongodb
+      - master
+      - master2
+    environment:
+      - SELF_ADDRESS=slave1
+      - PORT=50052
+      - MASTERS=master:50051,master2:50051
+    networks:
+      - myapp-network
+    volumes:
+      - ./files/slave1:/usr/local/bin/app/files
+
+  slave2:
+    build:
+      context: .
+      dockerfile: ./apps/chunk_server/Dockerfile
+    depends_on:
+      - mongodb
+      - master
+      - master2
+    environment:
+      - SELF_ADDRESS=slave2
+      - PORT=50052
+      - MASTERS=master:50051,master2:50051
+    networks:
+      - myapp-network
+    volumes:
+      - ./files/slave2:/usr/local/bin/app/files
+
+  slave3:
+    build:
+      context: .
+      dockerfile: ./apps/chunk_server/Dockerfile
+    depends_on:
+      - mongodb
+      - master
+      - master2
+    environment:
+      - SELF_ADDRESS=slave3
+      - PORT=50052
+      - MASTERS=master:50051,master2:50051
+    networks:
+      - myapp-network
+    volumes:
+      - ./files/slave3:/usr/local/bin/app/files
+  load-balancer:
+    image: nginx
+    volumes:
+      - ./templates:/etc/nginx/templates
+    ports:
+      - '1000:1000'
+    networks:
+      - myapp-network
+    command: nginx-debug -g 'daemon off;'
+    environment:
+      - NGINX_PORT=1000
+networks:
+  myapp-network:
+    driver: bridge
