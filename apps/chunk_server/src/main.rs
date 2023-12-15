@@ -64,9 +64,7 @@ impl SlaveService for Service {
 }
 async fn add_server_to_slaves() -> Result<(), Box<dyn std::error::Error>> {
     println!("Adding server to slaves......");
-    let self_address: String = std::env::var("SELF_ADDRESS")?.parse().unwrap();
     let assigned_port: i32 = std::env::var("PORT")?.parse().unwrap();
-    println!("Assigned port: {}", assigned_port);
     let masters: Vec<String> = std::env::var("MASTERS")?
         .split(",")
         .map(|s| s.to_string())
@@ -78,7 +76,7 @@ async fn add_server_to_slaves() -> Result<(), Box<dyn std::error::Error>> {
         let mut client = MasterServiceClient::connect(master_addr).await?;
         match client
             .connect_to_master(ConnectRequest {
-                ip: self_address.clone(),
+                ip: "0.0.0.0".to_string(),
                 port: assigned_port,
             })
             .await

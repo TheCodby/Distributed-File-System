@@ -1,0 +1,26 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: slave
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: slave
+  template:
+    metadata:
+      labels:
+        app: slave
+    spec:
+      containers:
+        - name: slave
+          image: localhost:5000/slave:latest
+          ports:
+            - containerPort: 50051
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PORT
+              value: '50051'
+            - name: MASTERS
+              value: 'master-service:50051'

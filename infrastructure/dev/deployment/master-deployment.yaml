@@ -1,0 +1,21 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: master
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: master
+  template:
+    metadata:
+      labels:
+        app: master
+    spec:
+      containers:
+        - name: master
+          image: localhost:5000/master:latest
+          ports:
+            - containerPort: 50051
+          imagePullPolicy: IfNotPresent

@@ -1,0 +1,21 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: slave-ingress
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: 'GRPC'
+    nginx.ingress.kubernetes.io/grpc-backend: 'true'
+    nginx.ingress.kubernetes.io/ssl-redirect: 'false'
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: slave.openfiles.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: slave-service
+                port:
+                  number: 50051
