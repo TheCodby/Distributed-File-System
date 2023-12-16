@@ -2,6 +2,23 @@ kind: ConfigMap
 apiVersion: v1
 metadata:
   name: nginx-config
-  namespace: ingress-nginx
+  namespace: nginx-ingress
 data:
-  http2: 'true'
+  main-template: |
+    worker_processes  {{.WorkerProcesses}};
+    ...
+        include /etc/nginx/conf.d/*.conf;
+    }
+  ingress-template: |
+    {{range $upstream := .Upstreams}}
+    upstream {{$upstream.Name}} {
+      {{if $upstream.LBMethod }}{{$upstream.LBMethod}};{{end}}
+    ...
+    }{{end}}
+  virtualserver-template: |
+    {{ range $u := .Upstreams }}
+    upstream {{ $u.Name }} {
+      {{ if ne $u.UpstreamZoneSize "0" }}zone {{ $u.Name }} {{ $u.UpstreamZoneSize }};{{ end }}
+    ...
+    }
+    {{ end }}
